@@ -1,57 +1,59 @@
 import random
 
-def win_probability(x, y):
-    return x / (x + y)
+def win_probability(my_pick, alice_pick):
+    return my_pick / (my_pick + alice_pick)
 
-def min_strategy(my_warriors, alice_warriors):
+def min_strategy(my_warriors):
     return min(my_warriors)
 
-def max_strategy(my_warriors, alice_warriors):
+def max_strategy(my_warriors):
     return max(my_warriors)
 
-def optimal_strategy(my_warriors, alice_warriors):
+def optimal_strategy(my_warriors):
     # TODO
-    return max(my_warriors)
+    if random.random() < 0.3333:
+        return min(my_warriors)
+    else:
+        return max(my_warriors)
 
-def simulate_game(your_strength, alice_strength, pick_strategy):
+def simulate_game(pick_strategy):
 
+    my_warriors = [5, 8, 1]
+    alice_warriors = [3, 4, 6, 7]
     wins = 0
-    num_iterations = 100000
+    num_iterations = 500000
 
     for _ in range(num_iterations):
-        my_warriors = your_strength.copy()
-        alice_warriors = alice_strength.copy()
+        curr_my_warriors = my_warriors.copy()
+        curr_alice_warriors = alice_warriors.copy()
 
-        while my_warriors and alice_warriors:
-            my_pick = pick_strategy(my_warriors, alice_warriors)
-            alice_pick = random.choice(alice_warriors)
+        while curr_my_warriors and curr_alice_warriors:
+            alice_pick = random.choice(curr_alice_warriors)
+            my_pick = pick_strategy(curr_my_warriors)
             prob_win = win_probability(my_pick, alice_pick)
-            my_warriors.remove(my_pick)
-            alice_warriors.remove(alice_pick)
+            curr_my_warriors.remove(my_pick)
+            curr_alice_warriors.remove(alice_pick)
             if random.random() < prob_win:
-                my_warriors.append(my_pick + alice_pick)
+                curr_my_warriors.append(my_pick + alice_pick)
             else:
-                alice_warriors.append(my_pick + alice_pick)
-        if my_warriors:
+                curr_alice_warriors.append(my_pick + alice_pick)
+        if len(curr_my_warriors) > 0:
             wins += 1
 
     return wins / num_iterations
 
-# Example strengths
-your_strength = [5, 8, 1]
-alice_strength = [3, 4, 6, 7]
 
 # 1. Max strategy
-max_strat_probability = simulate_game(your_strength, alice_strength, max_strategy)
-print("Probability of winning with max strategy (Monte Carlo Simulation):", max_strat_probability)
+max_strat_probability = simulate_game(max_strategy)
+print("With max strategy", max_strat_probability)
 
 # 2. Min strategy
-min_strat_probability = simulate_game(your_strength, alice_strength, min_strategy)
-print("Probability of winning with min strategy (Monte Carlo Simulation):", min_strat_probability)
+min_strat_probability = simulate_game(min_strategy)
+print("With min strategy", min_strat_probability)
 
 # 3. Expected Gain is 0
 
 # 4. Optimal strategy
-optimal_strat_probability = simulate_game(your_strength, alice_strength, optimal_strategy)
-print("Probability of winning with optimal strategy (Monte Carlo Simulation):", optimal_strat_probability)
+optimal_strat_probability = simulate_game(optimal_strategy)
+print("With optimal strategy", optimal_strat_probability)
 
