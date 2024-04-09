@@ -1,0 +1,6 @@
+# mac moment
+.DS_Store
+
+main
+*.zip
+_*
